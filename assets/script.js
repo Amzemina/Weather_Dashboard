@@ -24,28 +24,70 @@ function displayCities() {
         cityListEl.append(cityEl)
     });
 }
+// todo: call api for city as a new function. if not valid, don't add to list and alert user. if valid, add to list and display
+function getCityFromApi(city) {
+    var currentDate = dayjs()
+    var currentCityEl = $("#currentCity")
+    var iconEl = $("#icon")
+    var tempEl = $("#temp")
+    var windEl = $("#wind")
+    var humidityEl = $("#humidity")
+
+    
+    $.ajax({
+        url: `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`,
+        method: 'GET', 
+        dataType: 'json', 
+        success: function(response) {
+          console.log(response);
+        currentCityEl.text(`${dayjs.unix(response.dt).format('MMM D, YYYY')}, ${response.name}`)
+        var icon = $(`<img src = 'https://openweathermap.org/img/wn/${response.weather[0].icon}.png' alt='${response.weather[0].description}'/>`)
+        console.log(icon)
+        iconEl.append(icon)
+        tempEl.text(response.main.temp)
+        windEl.text(response.wind.speed)
+        humidityEl.text(response.main.humidity)
+
+        $.ajax({
+            url: `https://api.openweathermap.org/data/2.5/forecast?lat=${response.coord.lat}&lon=${response.coord.lon}&units=imperial&appid=${apiKey}`,
+            method: 'GET',
+            dataType: 'JSON',
+            success: function(fiveday) {
+                console.log(fiveday)
+            var list = fiveday.list.filter(el =>{ 
+               console.log( dayjs.unix(el.dt).format('MMM D, YYYY: HH:mm:ss'))
+                return (!currentDate.startOf("d")===dayjs.unix(el.dt).startOf("d"))
+            }) ;
+
+
+            var l2 = $.grep(fiveday.list, function(el) {
+                return !currentDate.startOf("d")===dayjs.unix(el.dt).startOf("d");
+              });
+            console.log(l2)
+            }
+        })
+        },
+      });
+}
+
+
 displayCities()
 //search button click event
-// todo: format
-$("#search-btn").on("click", function(event) {
-event.preventDefault()
+    $("#search-btn").on("click", function (event) {
+        event.preventDefault()
 
-var searchBox = $("#search-input")
-    // todo: call api for city as a new function. if not valid, don't add to list and alert user. if valid, add to list and display
-    if (!getCities().includes(searchBox.val())) {
-        localStorage.setItem("cities", JSON.stringify([...getCities(), searchBox.val()]));
-    }
-    displayCities()
-});
+        var searchBox = $("#search-input")
+
+        getCityFromApi(searchBox.val())
+
+        if (!getCities().includes(searchBox.val())) {
+            localStorage.setItem("cities", JSON.stringify([...getCities(), searchBox.val()]));
+        }
+        displayCities()
+    });
 
 })
 
 
-
-//Current weather
-// function currentWeather()
-
 // //5 day weather
 // function futureWeather()
-
-//local storage for past searched cities
