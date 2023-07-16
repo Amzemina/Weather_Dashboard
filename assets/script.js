@@ -19,7 +19,10 @@ function displayCities() {
     cityListEl.empty()
 
     getCities().forEach(city => { 
-        var cityEl = $("<div>")
+        var cityEl = $("<button class = 'btn btn-secondary'>")
+        cityEl.on("click", function (){
+            getCityFromApi(city)
+        })
         cityEl.text(city)
         cityListEl.append(cityEl)
     });
@@ -39,37 +42,50 @@ function getCityFromApi(city) {
         method: 'GET', 
         dataType: 'json', 
         success: function(response) {
+            if (!getCities().includes(city)) {
+                localStorage.setItem("cities", JSON.stringify([...getCities(), city]));
+                displayCities()
+            }
           console.log(response);
         currentCityEl.text(`${dayjs.unix(response.dt).format('MMM D, YYYY')}, ${response.name}`)
         var icon = $(`<img src = 'https://openweathermap.org/img/wn/${response.weather[0].icon}.png' alt='${response.weather[0].description}'/>`)
         console.log(icon)
+        iconEl.empty()
         iconEl.append(icon)
-        tempEl.text(response.main.temp)
-        windEl.text(response.wind.speed)
-        humidityEl.text(response.main.humidity)
+        tempEl.text(`${response.main.temp} °F`)
+        windEl.text(`${response.wind.speed} MPH`)
+        humidityEl.text(`${response.main.humidity} %`)
 
         $.ajax({
             url: `https://api.openweathermap.org/data/2.5/forecast?lat=${response.coord.lat}&lon=${response.coord.lon}&units=imperial&appid=${apiKey}`,
             method: 'GET',
             dataType: 'JSON',
             success: function(fiveday) {
-                console.log(fiveday)
-            var list = fiveday.list.filter(el =>{ 
-               console.log( dayjs.unix(el.dt).format('MMM D, YYYY: HH:mm:ss'))
-                return (!currentDate.startOf("d")===dayjs.unix(el.dt).startOf("d"))
-            }) ;
-
-
-            var l2 = $.grep(fiveday.list, function(el) {
-                return !currentDate.startOf("d")===dayjs.unix(el.dt).startOf("d");
-              });
-            console.log(l2)
+                //filters out items from today
+                var filteredDays = $.grep(fiveday.list, function(el) {
+                    return !currentDate.startOf("d").isSame(dayjs.unix(el.dt).startOf("d"),"day")
+                });
+                var fiveDayBoxEl = $("#fiveDayBox")
+                
+                fiveDayBoxEl.empty()
+                for (let i = 4; i < filteredDays.length; i += 8) {
+                    var fiveDayChild = $(`
+                    <div>
+                        <h4>${dayjs.unix(filteredDays[i].dt).format('MMM D, YYYY')}</h4>
+                        <img src = 'https://openweathermap.org/img/wn/${filteredDays[i].weather[0].icon}.png' alt='${filteredDays[i].weather[0].description}'/>
+                        <div>${filteredDays[i].main.temp} °F </div
+                        <div>${filteredDays[i].wind.speed} MPH </div>
+                        <div>${filteredDays[i].main.humidity} % </div>
+                        </div>
+                    `) 
+                    console.log(dayjs.unix(filteredDays[i].dt).format('MMM D, YYYY HH:mm:ss'))
+                   fiveDayBoxEl.append(fiveDayChild)
+                }
             }
         })
         },
       });
 }
-
 
 displayCities()
 //search button click event
@@ -79,15 +95,6 @@ displayCities()
         var searchBox = $("#search-input")
 
         getCityFromApi(searchBox.val())
-
-        if (!getCities().includes(searchBox.val())) {
-            localStorage.setItem("cities", JSON.stringify([...getCities(), searchBox.val()]));
-        }
-        displayCities()
     });
 
 })
-
-
-// //5 day weather
-// function futureWeather()
