@@ -38,7 +38,7 @@ $(document).ready(function () {
     }
     //gets current city weather forecast
     function getCityFromApi(city) {
-        
+
         var currentCityEl = $("#currentCity")
         var iconEl = $("#icon")
         var tempEl = $("#temp")
@@ -61,9 +61,9 @@ $(document).ready(function () {
                 var icon = $(`<img src = 'https://openweathermap.org/img/wn/${response.weather[0].icon}.png' alt='${response.weather[0].description}'/>`)
                 iconEl.empty()
                 iconEl.append(icon)
-                tempEl.text(`${response.main.temp} °F`)
-                windEl.text(`${response.wind.speed} MPH`)
-                humidityEl.text(`${response.main.humidity} %`)
+                tempEl.text(`Temp: ${response.main.temp} °F`)
+                windEl.text(`Wind: ${response.wind.speed} MPH`)
+                humidityEl.text(`Humidity: ${response.main.humidity} %`)
 
                 getFiveDayForecast(response.coord.lat, response.coord.lon)
             },
@@ -88,11 +88,11 @@ $(document).ready(function () {
                 for (let i = 0; i < filteredDays.length; i += 8) {
                     var fiveDayChild = $(`
                         <div class="col-xl col-lg col-md col-sm-12 col-xs-12 col-12 card">
-                            <h4>${dayjs.unix(filteredDays[i].dt).format('MMM D, YYYY HH:mm')}</h4>
+                            <h4>${dayjs.unix(filteredDays[i].dt).format('MMM D, YYYY')}</h4>
                             <img src = 'https://openweathermap.org/img/wn/${filteredDays[i].weather[0].icon}.png' alt='${filteredDays[i].weather[0].description}'/>
-                            <div>${filteredDays[i].main.temp} °F </div>
-                            <div>${filteredDays[i].wind.speed} MPH </div>
-                            <div>${filteredDays[i].main.humidity} % </div>
+                            <div>Temp: ${filteredDays[i].main.temp} °F </div>
+                            <div>Wind: ${filteredDays[i].wind.speed} MPH </div>
+                            <div>Humidity: ${filteredDays[i].main.humidity} % </div>
                         </div>
                         `)
                     fiveDayBoxEl.append(fiveDayChild)
