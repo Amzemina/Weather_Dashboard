@@ -28,7 +28,7 @@ $(document).ready(function () {
         cityListEl.empty()
 
         getCities().forEach(city => {
-            var cityEl = $("<button class = 'btn btn-secondary'>")
+            var cityEl = $("<button class = 'col-12 btn btn-secondary'>")
             cityEl.on("click", function () {
                 getCityFromApi(city)
             })
@@ -84,15 +84,16 @@ $(document).ready(function () {
                 var fiveDayBoxEl = $("#fiveDayBox")
 
                 fiveDayBoxEl.empty()
-                for (let i = 4; i < filteredDays.length; i += 8) {
+                //increment every 8 records to get the first record for the 5 days
+                for (let i = 0; i < filteredDays.length; i += 8) {
                     var fiveDayChild = $(`
-                        <div>
-                            <h4>${dayjs.unix(filteredDays[i].dt).format('MMM D, YYYY')}</h4>
+                        <div class="col-xl col-lg col-md col-sm-12 col-xs-12 col-12 card">
+                            <h4>${dayjs.unix(filteredDays[i].dt).format('MMM D, YYYY HH:mm')}</h4>
                             <img src = 'https://openweathermap.org/img/wn/${filteredDays[i].weather[0].icon}.png' alt='${filteredDays[i].weather[0].description}'/>
-                            <div>${filteredDays[i].main.temp} °F </div
+                            <div>${filteredDays[i].main.temp} °F </div>
                             <div>${filteredDays[i].wind.speed} MPH </div>
                             <div>${filteredDays[i].main.humidity} % </div>
-                            </div>
+                        </div>
                         `)
                     fiveDayBoxEl.append(fiveDayChild)
                 }
