@@ -57,7 +57,7 @@ $(document).ready(function () {
                     displayCities()
                 }
 
-                currentCityEl.text(`${dayjs.unix(response.dt).format('MMM D, YYYY')}, ${response.name}`)
+                currentCityEl.text(`${response.name}, ${dayjs.unix(response.dt).format('MMM D, YYYY')}`)
                 var icon = $(`<img src = 'https://openweathermap.org/img/wn/${response.weather[0].icon}.png' alt='${response.weather[0].description}'/>`)
                 iconEl.empty()
                 iconEl.append(icon)

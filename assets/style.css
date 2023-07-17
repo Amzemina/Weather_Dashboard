@@ -9,3 +9,12 @@ input {
     padding: 5px;
     margin: 10px;
 } 
+#fiveDayBox .card {
+    color: white;
+    background-color: rgb(26, 29, 45);
+    margin: 2px;
+}
+#currentCityWeather {
+    padding: 5px;
+    font-size: 30px;
+}
